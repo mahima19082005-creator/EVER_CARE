@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EverCare Registration</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Lato', sans-serif; /* 2. NEW DEFAULT FONT */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 3. NEW CONTAINER STYLE */
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid #E0E0E0; /* Softer border */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+
+        .logo img {
+            width: 220px;
+        }
+
+        /* 4. KEPT JUNGE FOR HEADERS */
+        h2 {
+            font-family: 'Junge', serif;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0;
+            font-size: 24px;
+            position: relative;
+            top: 60px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60%;
+            margin-top: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-top: 35px;
+        }
+
+        label {
+            font-weight: bold;
+            white-space: nowrap;
+            width: 35%;
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        label::after {
+            content: ":";
+            margin-right: 10px;
+        }
+
+        input {
+            font-family: 'Lato', sans-serif;
+            flex-grow: 1;
+            width: calc(100% + 1.5in);
+            border: none;
+            border-bottom: 1px solid black;
+            background-color: transparent;
+            padding: 5px;
+            outline: none;
+        }
+
+        /* 5. NEW MODERN BUTTON STYLE */
+        .btn {
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            background-color: #8EA76D; /* Use your dark-green */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            margin: 50px auto 0;
+        }
+
+        .btn:hover {
+            background-color: #7a915d; /* A slightly darker shade */
+            transform: translateY(-2px); /* A subtle "lift" effect */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 6. NEW MODAL (POPUP) CSS */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+            font-family: 'Lato', sans-serif;
+            max-width: 400px;
+            width: 90%;
+        }
+        #modalCloseBtn {
+            font-family: 'Lato', sans-serif; 
+            font-weight: 700;
+            background-color: #8EA76D; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            margin-top: 20px;
+        }
+        #modalCloseBtn:hover {
+            background-color: #7a915d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="mandala.png" alt="EverCare Logo">
+            </div>
+            <h2>REGISTRATION</h2>
+        </div>
+        <div class="form-container">
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" id="age" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact No</label>
+                    <input type="tel" name="contact" id="contact" pattern="[0-9]{10}" required
+                           title="Please enter exactly 10 digits for the contact number">
+                </div>
+                <div class="form-group">
+                    <label style="margin-left: -5px;">Emergency<br>Contact No</label>
+                    <input type="tel" name="emergency_contact" id="emergency_contact" pattern="[0-9]{10}" required
+                           title="Please enter exactly 10 digits for the emergency contact number">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">SIGN UP</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customAlert" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage">This is an alert!</p>
+            <button id="modalCloseBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // 8. NEW MODAL JAVASCRIPT
+        const modal = document.getElementById('customAlert');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        function customAlert(message) {
+            modalMessage.textContent = message;
+            modal.style.display = "flex";
+        }
+        modalCloseBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // --- Form Submission Logic ---
+        document.getElementById('registrationForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const email = document.getElementById('email').value;
+            const contact = document.getElementById('contact').value;
+            const emergency_contact = document.getElementById('emergency_contact').value;
+            const password = document.getElementById('password').value;
+
+            const phonePattern = /^[0-9]{10}$/;
+            if (!phonePattern.test(contact)) {
+                // 9. REPLACED ALERT()
+                customAlert('Contact No must be exactly 10 digits.');
+                return;
+            }
+            if (!phonePattern.test(emergency_contact)) {
+                // 9. REPLACED ALERT()
+                customAlert('Emergency Contact No must be exactly 10 digits.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name, age, email, contact, emergency_contact, password
+                    })
+                });
+
+                if (response.ok) {
+                    // 9. REPLACED ALERT()
+                    customAlert('Registration successful! Please log in.');
+                    // Add a small delay so the user can read the message
+                    setTimeout(() => {
+                        window.location.href = 'userlogin.html'; 
+                    }, 1500);
+                } else {
+                    const data = await response.json();
+                    // 9. REPLACED ALERT()
+                    customAlert('Registration failed: ' + (data.msg || 'Please try again.'));
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                // 9. REPLACED ALERT()
+                customAlert('An error occurred. Please try again later.');
+            }
+        });
+    </script>
+</body>
+
+</html>

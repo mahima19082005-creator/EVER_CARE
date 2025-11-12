@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments</title>
+    <style>
+        /* Your existing CSS (no changes) */
+        @import url('https://fonts.googleapis.com/css2?family=Junge&display=swap');
+
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Junge', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid black;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+             overflow: auto; 
+        }
+
+        .header {
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            background-color: #DCE5B2;
+            border-bottom: 1px solid black;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .title {
+            margin-top: 50px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .appointments-table {
+            width: 90%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .appointments-table th, .appointments-table td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .appointments-table th {
+            background-color: #DCE5B2;
+        }
+        
+        .calendar-btn {
+            background-color: #007bff; /* Blue */
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .calendar-btn:hover {
+            background-color: #0069d9;
+        }
+        
+        .corner-img {
+            position: absolute;
+            width: 120px; 
+            height: 120px; 
+            z-index: -1; 
+            opacity: 0.9;
+            pointer-events: none;
+        }
+        .corner-left { left: 0; bottom: 0; }
+        .corner-right { right: 0; bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="userNameHeader">NAME OF USER</span>
+        </div>
+
+        <div class="title">MY APPOINTMENTS</div>
+
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Appointment Name</th>
+                    <th>Date</th>
+                    <th>Time from</th>
+                    <th>Time to</th>
+                    <th>Volunteer Name</th>
+                    <th>Add to Calendar</th>
+                </tr>
+            </thead>
+            <tbody id="appointmentsTable"></tbody>
+        </table>
+        
+        <img src="https://i.ibb.co/kscDJR7M/Screenshot-2025-04-08-203012-removebg-preview.png" alt="Bottom Left" class="corner-img corner-left">
+        <img src="https://i.ibb.co/tpVbjyPR/Screenshot-2025-04-08-205005-removebg-preview.png" alt="Bottom Right" class="corner-img corner-right">
+
+    </div>
+
+    <script>
+        async function loadAppointments() {
+            // ... (Your existing code to load appointments) ...
+            const userName = localStorage.getItem('userName');
+            const token = localStorage.getItem('token'); 
+            const tableBody = document.getElementById("appointmentsTable");
+            tableBody.innerHTML = ""; 
+
+            if (userName) {
+                document.getElementById('userNameHeader').textContent = userName;
+            } else {
+                alert("Please log in to view appointments.");
+                window.location.href = 'userlogin.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/appointments', { 
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch appointments');
+                const appointments = await response.json(); 
+
+                if (appointments.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7">You have no appointments.</td></tr>';
+                    return;
+                }
+
+                appointments.forEach((appointment, index) => {
+                    const row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${appointment.purpose}</td>
+                        <td>${appointment.date}</td>
+                        <td>${appointment.timeFrom}</td>
+                        <td>${appointment.timeTo}</td>
+                        <td>${appointment.volunteer}</td>
+                        <td>
+                            <button class="calendar-btn" onclick='addToCalendar(${JSON.stringify(appointment)})'>
+                                Add
+                            </button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error('Error fetching appointments:', error);
+                tableBody.innerHTML = '<tr><td colspan="7">Could not load appointments.</td></tr>';
+            }
+        }
+
+        window.onload = loadAppointments;
+
+        // --- THIS FUNCTION IS NOW FIXED ---
+        function parseDateTime(dateStr, timeStr) {
+            // 1. Parse Date (Handles DD/MM/YY and DD/MM/YYYY)
+            const [day, month, yearInput] = dateStr.split('/');
+            
+            // --- THIS IS THE FIX ---
+            // Check if the year is 2 digits (e.g., "25") or 4 digits (e.g., "2025")
+            const year = yearInput.length === 4 ? yearInput : `20${yearInput}`;
+            // --- END OF FIX ---
+            
+            // 2. Parse Time (h:mm AM/PM)
+            let [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+
+            if (hours === '12') {
+                hours = '00'; // 12 AM is 00 hours
+            }
+            if (modifier && modifier.toUpperCase() === 'PM') { // Added 'modifier &&' for safety
+                hours = parseInt(hours, 10) + 12; // Convert 4 PM to 16
+            }
+
+            hours = String(hours).padStart(2, '0');
+            
+            // 3. Format to YYYYMMDDTHHMMSS
+            return `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}T${hours}${minutes}00`;
+        }
+
+
+        function addToCalendar(appointment) {
+            const title = `EverCare: ${appointment.purpose} w/ ${appointment.volunteer}`;
+            const location = appointment.location;
+            const description = `Appointment for ${appointment.name} with ${appointment.volunteer}. Contact: ${appointment.contact}`;
+            
+            const tzid = "Asia/Kolkata"; 
+            const dtstart = parseDateTime(appointment.date, appointment.timeFrom);
+            const dtend = parseDateTime(appointment.date, appointment.timeTo);
+
+            const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//EverCare//NONSGML v1.0//EN
+BEGIN:VTIMEZONE
+TZID:${tzid}
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:+0530
+TZOFFSETTO:+0530
+TZNAME:IST
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:${'evercare-' + Math.random().toString(36).substr(2, 9)}
+DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, '')}Z
+DTSTART;TZID=${tzid}:${dtstart}
+DTEND;TZID=${tzid}:${dtend}
+SUMMARY:${title}
+LOCATION:${location}
+DESCRIPTION:${description}
+END:VEVENT
+END:VCALENDAR
+            `.trim().replace(/\n/g, '\r\n'); 
+
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${appointment.purpose}_appointment.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    </script>
+</body>
+</html>

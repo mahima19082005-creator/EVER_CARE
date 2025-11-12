@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Junge', serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            background-image: url('download.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .container { 
+            width: calc(100% - 1in); 
+            height: calc(100% - 1in); 
+            background-color: rgba(245, 255, 220, 0.85); 
+            border: 1px solid black; 
+            padding: 20px; 
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            backdrop-filter: blur(5px);
+        }
+
+        .form-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 60%; 
+            margin-top: 40px; 
+        }
+
+        .form-group { 
+            display: flex; 
+            align-items: center; 
+            width: 100%; 
+            margin-top: 35px; 
+        }
+
+        label { 
+            font-weight: bold; 
+            width: 35%; 
+            text-align: right; 
+            margin-right: 15px; 
+        }
+
+        label::after { 
+            content: ":"; 
+            margin-right: 10px; 
+        }
+
+        input { 
+            flex-grow: 1; 
+            border: none; 
+            border-bottom: 1px solid black; 
+            background-color: transparent; 
+            padding: 5px; 
+            outline: none; 
+            font-size: 16px;
+        }
+
+        .btn { 
+            display: block; 
+            width: 150px; 
+            padding: 10px; 
+            margin: 50px auto 0; 
+            border: 1px solid black; 
+            background: none; 
+            cursor: pointer; 
+            text-align: center; 
+            font-size: 16px;
+        }
+
+        .btn:hover { 
+            background-color: black; 
+            color: white; 
+        }
+
+        h2 { 
+            text-align: center; 
+            font-size: 28px; 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>VOLUNTEER LOGIN</h2>
+        <div class="form-container">
+            <form id="volunteerLoginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">LOGIN</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('volunteerLoginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/auth/volunteer/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('volunteerToken', data.token);
+                    localStorage.setItem('volunteerName', data.volunteerName);
+                    window.location.href = 'vol_dashmodific.html'; 
+                } else {
+                    alert('Login failed. Please check your email and password.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Ensure the backend server is running.');
+            }
+        });
+    </script>
+</body>
+</html>

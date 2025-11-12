@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EverCare Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Junge&display=swap');
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Junge', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid black;
+            padding: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .header {
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            background-color: #DCE5B2;
+            border-bottom: 1px solid black;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .logo img {
+            width: 257px;
+            height: 180px;
+	    margin-bottom: 15px;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 0;
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            right: 35px;
+        }
+        .dashboard div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            height: 150px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+	    position: relative;
+	    overflow: hidden;
+        }
+        .dashboard div:hover {
+            background-color: #d0e4a1;
+        }
+        .green {
+            background-color: #F5FFDC;
+        }
+       .light-green {
+            background-color: #E9F5C5;
+	    background-image: url('https://i.ibb.co/kscDJR7M/Screenshot-2025-04-08-203012-removebg-preview.png');
+            background-position: bottom left;
+            background-size: auto 100%;
+	    background-repeat: no-repeat;
+            color: black;
+        }
+        .medium-green {
+            background-color: #B2C985;
+	    background-image: url('https://i.ibb.co/nskWkbbs/Screenshot-2025-04-08-205135-removebg-preview.png');
+            background-position: top center;
+            background-size: 100% auto; /* Adjust size as needed */
+            background-repeat: no-repeat;
+            color: black;
+        }
+        .dark-green {
+            background-color: #8EA76D;
+background-image: url('https://i.ibb.co/tpVbjyPR/Screenshot-2025-04-08-205005-removebg-preview.png');
+            background-position: bottom right;
+            background-size: auto 100%; /* Adjust size as needed */
+            background-repeat: no-repeat;
+            color: black;
+        }
+         .light-green img, .medium-green img, .dark-green img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="userNameHeader">NAME OF VOLUNTEER</span>
+        </div>
+        <div class="logo">
+            <img src="mandala.png" alt="EverCare Logo">
+        </div>
+        <div class="dashboard">
+            <div class="green" onclick="window.location.href='volmyapp.html'">SCHEDULED APPOINTMENTS</div>
+            <div class="medium-green"></div>
+            <div class="green" onclick="window.location.href='volmyprof.html'">MY PROFILE</div>
+            <div class="light-green"></div>
+            <div class="green" onclick="window.location.href='rewards.html'">MY REWARDS</div>
+            <div class="dark-green"></div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve the volunteer's name from localStorage and set it to the header
+        const volunteerName = localStorage.getItem('volunteerName');
+        if (volunteerName) {
+            document.getElementById('userNameHeader').textContent = volunteerName;
+        }
+    </script>
+</body>
+</html>

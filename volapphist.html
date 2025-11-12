@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Junge&display=swap');
+
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Junge', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid black;
+            padding: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* Prevent corner images from overflowing */
+        }
+
+        .header {
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            background-color: #DCE5B2;
+            border-bottom: 1px solid black;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .logo {
+            position: absolute;
+            top: 34px;
+            left: 20px;
+        }
+
+        .logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        .title {
+            margin-top: 95px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .appointments-table {
+            width: 90%;
+            margin-top: 37px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .appointments-table th, .appointments-table td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .appointments-table th {
+            background-color: #DCE5B2;
+        }
+
+        /* Corner Image Styles */
+        .corner-img {
+            position: absolute;
+            width: 120px; /* Adjust as needed */
+            height: 120px; /* Adjust as needed */
+            z-index: 1; /* Ensure they are on top */
+            opacity: 0.9;
+            pointer-events: none; /* So they don't interfere with form elements */
+        }
+
+        .corner-left {
+            left: 0;
+            bottom: 0;
+        }
+
+        .corner-right {
+            right: 0;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="userNameHeader">Loading...</span>
+        </div>
+
+        <div class="logo">
+            <img src="mandala.png" alt="EverCare Logo">
+        </div>
+
+        <div class="title">HISTORY</div>
+
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Appointment Name</th>
+                    <th>Date</th>
+                    <th>Time from</th>
+                    <th>Time to</th>
+                    <th>Contact Details</th>
+                </tr>
+            </thead>
+            <tbody id="historyTable"></tbody>
+             <!-- Corner Images -->
+            <img src="https://i.ibb.co/kscDJR7M/Screenshot-2025-04-08-203012-removebg-preview.png" alt="Bottom Left" class="corner-img corner-left">
+        <img src="https://i.ibb.co/tpVbjyPR/Screenshot-2025-04-08-205005-removebg-preview.png" alt="Bottom Right" class="corner-img corner-right">
+    </div>
+
+
+    <script>
+        function loadHistory() {
+            // Retrieve volunteer's name
+            const volunteerName = localStorage.getItem("volunteerName") || "Unknown Volunteer";
+            document.getElementById("userNameHeader").textContent = volunteerName;
+
+            // Get all stored appointments
+            let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+            const tableBody = document.getElementById("historyTable");
+            tableBody.innerHTML = "";
+
+            if (appointments.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6">No past appointments found</td></tr>`;
+                return;
+            }
+
+            // Populate table with all past appointments
+            appointments.forEach((appointment, index) => {
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${appointment.purpose}</td>
+                    <td>${appointment.date}</td>
+                    <td>${appointment.timeFrom}</td>
+                    <td>${appointment.timeTo}</td>
+                    <td>${appointment.contact || "N/A"}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        window.onload = loadHistory;
+    </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Form</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Junge&display=swap');
+
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Junge', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid black;
+            padding: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            background-color: #DCE5B2;
+            border-bottom: 1px solid black;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .logo img {
+            width: 257px;
+            height: 180px;
+        }
+
+        .form-container {
+            width: 75%;
+            margin-top: 10px;
+            text-align: center;
+            max-height: calc(100% - 220px);
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            justify-content: center;
+        }
+
+        .form-row label {
+            width: 30%;
+            text-align: center;
+            font-size: 12px;
+            padding-right: 0px;
+        }
+
+        .form-row input {
+            width: 40%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #E9F5C5;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+
+        .book-button {
+            background-color: #E9F5C5;
+            color: black;
+            padding: 6px 12px;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .corner-img {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            z-index: -1; /* Sent to back */
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .corner-left {
+            left: 0;
+            bottom: 0;
+        }
+
+        .corner-right {
+            right: 0;
+            bottom: 0;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 2px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="userNameHeader">Loading...</span>
+        </div>
+        <div class="logo">
+            <img src="mandala.png" alt="EverCare Logo">
+        </div>
+        <div class="form-container">
+            <h2>APPOINTMENT FORM</h2>
+            <form id="appointmentForm">
+                <div class="form-row">
+                    <label for="purpose">Purpose:</label>
+                    <input type="text" id="purpose" name="purpose" required>
+                </div>
+                <div class="form-row">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-row">
+                    <label for="volunteer">Volunteer Name:</label>
+                    <input type="text" id="volunteer" name="volunteer" required>
+                </div>
+                <div class="form-row">
+                    <label for="date">Date:</label>
+                    <input type="text" id="date" name="date" required>
+                </div>
+                <div class="form-row">
+                    <label for="contact">Contact:</label>
+                    <input type="text" id="contact" name="contact" required>
+                </div>
+                <div id="contactError" class="error">Please enter a valid 10-digit contact number.</div>
+                <div class="form-row">
+                    <label for="time_from">Time from:</label>
+                    <input type="text" id="time_from" name="time_from" required>
+                </div>
+                <div class="form-row">
+                    <label for="time_to">Time to:</label>
+                    <input type="text" id="time_to" name="time_to" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+
+                <button type="submit" class="book-button">BOOK</button>
+            </form>
+        </div>
+
+        <img src="https://i.ibb.co/kscDJR7M/Screenshot-2025-04-08-203012-removebg-preview.png"
+             alt="Bottom Left" class="corner-img corner-left">
+        <img src="https://i.ibb.co/tpVbjyPR/Screenshot-2025-04-08-205005-removebg-preview.png"
+             alt="Bottom Right" class="corner-img corner-right">
+    </div>
+
+    <script>
+        function updateUserName() {
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('userNameHeader').textContent = userName;
+            } else {
+                alert("Please log in to book an appointment.");
+                window.location.href = 'userlogin.html';
+            }
+        }
+
+        async function saveAppointment(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Your session has expired. Please log in again.");
+                window.location.href = 'userlogin.html';
+                return;
+            }
+
+            const purpose = document.getElementById("purpose").value;
+            const name = document.getElementById("name").value;
+            const volunteer = document.getElementById("volunteer").value;
+            const date = document.getElementById("date").value;
+            const contact = document.getElementById("contact").value;
+            const timeFrom = document.getElementById("time_from").value;
+            const timeTo = document.getElementById("time_to").value;
+            // Get location from the simple text input
+            const location = document.getElementById("location").value; 
+
+            const contactError = document.getElementById("contactError");
+            const contactPattern = /^\d{10}$/;
+            if (!contactPattern.test(contact)) {
+                contactError.style.display = "block";
+                return;
+            } else {
+                contactError.style.display = "none";
+            }
+
+            const appointment = { purpose, name, volunteer, date, contact, timeFrom, timeTo, location };
+
+            try {
+                // Use relative URL since server is hosting files
+                const response = await fetch('/api/appointments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token 
+                    },
+                    body: JSON.stringify(appointment)
+                });
+
+                if (response.ok) {
+                    alert('Appointment booked successfully!');
+                    window.location.href = "myappoint.html";
+                } else {
+                    const data = await response.json();
+                    alert('Failed to book appointment: ' + (data.msg || 'Please try again.'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please ensure the backend server is running.');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", updateUserName);
+        document.getElementById("appointmentForm").addEventListener("submit", saveAppointment);
+    </script>
+</body>
+</html>

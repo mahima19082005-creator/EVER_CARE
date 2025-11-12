@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to EverCare</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Lato', sans-serif;
+      
+      /* 1. YOUR NEW BACKGROUND IMAGE */
+      background-image: url('volunteering_bg.jpg'); 
+      
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; 
+      cursor: pointer; 
+      overflow: hidden;
+    }
+
+    /* 2. MODERN "GLASS" CONTAINER */
+    .outer-container {
+      width: calc(100% - 1in); 
+      height: calc(100% - 1in);
+      
+      /* This creates the blurred glass effect */
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Softer border */
+      border-radius: 15px; /* More rounded */
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); /* Deeper shadow */
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 3. INNER CONTENT BOX */
+    .inner-rectangle {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9); /* Makes logo readable */
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      
+      /* Animation */
+      opacity: 0;
+      transform: scale(0.95);
+      animation: fadeIn 1s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+
+    .centered-image {
+      max-width: 300px; /* Adjust mandala size as needed */
+      height: auto;
+      margin-bottom: 10px;
+      /* Adds a shadow to the logo itself */
+      filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.1));
+    }
+
+    /* 4. WELCOME TEXT */
+    .welcome-text {
+        font-family: 'Junge', serif;
+        font-size: 2.5em;
+        color: #333;
+        margin: 10px 0;
+    }
+    
+    .tagline {
+        font-size: 1.1em;
+        color: #555;
+        margin: 0;
+    }
+
+    /* Simple fade-in animation */
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Keep the original functionality: click anywhere to continue
+      document.body.addEventListener("click", function() {
+        window.location.href = "homepg.html"; // Redirect to home page
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="outer-container">
+    <div class="inner-rectangle">
+      <img src="mandala.png" alt="Mandala Logo" class="centered-image"> 
+      <h1 class="welcome-text">EverCare</h1>
+      <p class="tagline">Click anywhere to begin</p>
+    </div>
+  </div>
+</body>
+</html>

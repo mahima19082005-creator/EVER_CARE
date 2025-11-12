@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Options - EverCare</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 1. FIXED BACKGROUND IMAGE */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Lato', sans-serif;
+            
+            /* ✅ Make sure your file is named exactly like this */
+            background-image: url('volunteering_bg.avif.avif'); 
+            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 2. SIMPLE CONTAINER (no blur or shadow) */
+        .outer-container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: transparent;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 3. CLEAN INNER BOX */
+        .inner-rectangle {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95); /* white box with light transparency */
+            padding: 40px;
+            border-radius: 10px;
+            width: 50%;
+            max-width: 550px;
+        }
+
+        .mandala-logo {
+            width: 420px;
+            max-width: 90%;
+            height: auto;
+            margin-bottom: 25px;
+        }
+
+        .button-container {
+            width: 100%;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .row:not(:last-child) {
+            margin-bottom: 20px;
+        }
+
+        /* 4. MODERN BUTTON STYLE */
+        .custom-button {
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            background-color: #8EA76D;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .custom-button:hover {
+            background-color: #7a915d;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="outer-container">
+        <div class="inner-rectangle">
+            <!-- Replace mandala.png with your own logo if needed -->
+            <img src="mandala.png" alt="Mandala Logo with Title and Subline" class="mandala-logo">
+
+            <div class="button-container">
+                <div class="row">
+                    <button class="custom-button" onclick="window.location.href='userlogin.html'">USER LOGIN</button>
+                    <button class="custom-button" onclick="window.location.href='vollogin.html'">VOLUNTEER LOGIN</button>
+                </div>
+                <div class="row">
+                    <button class="custom-button" onclick="window.location.href='registration1.html'">NEW REGISTRATION</button>
+                    <button class="custom-button" onclick="window.location.href='volunteer_registration.html'">VOLUNTEER NEW REGISTRATION</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

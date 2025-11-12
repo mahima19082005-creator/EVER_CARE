@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Profile - EverCare</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Junge&display=swap" rel="stylesheet">
+    
+    <style>
+        /* This is the original CSS from your project */
+        body {
+            background-color: #F5FFDC;
+            font-family: 'Junge', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: calc(100% - 1in);
+            height: calc(100% - 1in);
+            background-color: #F5FFDC;
+            border: 1px solid black; /* Original black border */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .header {
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            background-color: #DCE5B2;
+            border-bottom: 1px solid black; /* Original black border */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        h2 {
+            font-family: 'Junge', serif;
+            text-align: center;
+            font-size: 24px;
+            margin-top: 80px; /* Space below header */
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60%;
+            margin-top: 20px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-top: 35px;
+        }
+        label {
+            font-weight: bold;
+            white-space: nowrap;
+            width: 35%;
+            text-align: right;
+            margin-right: 15px;
+        }
+        label::after { content: ":"; margin-right: 10px; }
+        
+        input {
+            font-family: 'Junge', serif;
+            flex-grow: 1;
+            width: calc(100% + 1.5in);
+            border: none;
+            border-bottom: 1px solid black; /* Original underline */
+            background-color: transparent;
+            padding: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+        input:disabled {
+            color: #333; 
+            background-color: #E9F5C5; /* Original disabled color */
+        }
+        
+        /* Original Button Style */
+        .btn {
+            font-family: 'Junge', serif;
+            background-color: #E9F5C5;
+            color: black;
+            padding: 6px 12px;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 50px;
+        }
+        .btn:hover {
+            background-color: #d0e4a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="volunteerNameHeader">Loading...</span>
+        </div>
+        
+        <h2>MY VOLUNTEER PROFILE</h2>
+
+        <div class="form-container">
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="name" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Contact No</label>
+                    <input type="tel" id="contact" disabled>
+                </div>
+                <button type="button" class="btn" onclick="window.location.href='vol_dashmodific.html'">GO BACK</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const volunteerName = localStorage.getItem('volunteerName');
+            const volunteerToken = localStorage.getItem('volunteerToken');
+
+            if (volunteerName && volunteerToken) {
+                document.getElementById('volunteerNameHeader').textContent = volunteerName;
+                
+                try {
+                    const response = await fetch('/api/auth/volunteer/profile', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + volunteerToken
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch profile details.');
+                    }
+                    
+                    const profile = await response.json();
+                    
+                    // Populate the form fields
+                    document.getElementById('name').value = profile.name;
+                    document.getElementById('email').value = profile.email;
+                    document.getElementById('contact').value = profile.contact;
+
+                } catch (error) {
+                    alert('Could not load profile. ' + error.message);
+                }
+            } else {
+                // Not logged in
+                alert("You are not logged in. Redirecting to login page.");
+                window.location.href = 'vollogin.html';
+            }
+        });
+    </script>
+</body>
+</html>

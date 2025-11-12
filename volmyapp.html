@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assigned Appointments</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhpmA9TwjVKTjHdMbpLSajS/L/yLgHtxLPSA="
+     crossorigin=""/>
+
+    <style>
+        /* Your existing CSS */
+        @import url('https://fonts.googleapis.com/css2?family=Junge&display=swap');
+        body { background-color: #F5FFDC; font-family: 'Junge', serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 0; box-sizing: border-box; }
+        .container { width: calc(100% - 1in); height: calc(100% - 1in); background-color: #F5FFDC; border: 1px solid black; padding: 20px; position: relative; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        .header { width: calc(100% - 20px); display: flex; justify-content: flex-end; align-items: center; padding: 10px; background-color: #DCE5B2; border-bottom: 1px solid black; position: absolute; top: 0; left: 0; }
+        .title { margin-top: 50px; font-size: 22px; font-weight: bold; text-align: center; }
+        .appointments-table { width: 90%; margin-top: 20px; border-collapse: collapse; text-align: center; }
+        .appointments-table th, .appointments-table td { border: 1px solid black; padding: 10px; }
+        .appointments-table th { background-color: #DCE5B2; }
+
+        /* CSS for Map Button */
+        .map-btn {
+            background-color: #4CAF50; /* Green */
+            border: none; color: white; padding: 5px 10px; text-align: center;
+            font-size: 12px; border-radius: 4px; cursor: pointer;
+        }
+        .map-btn:hover { background-color: #45a049; }
+
+        /* --- 1. NEW CSS FOR CALENDAR BUTTON --- */
+        .calendar-btn {
+            background-color: #007bff; /* Blue */
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .calendar-btn:hover {
+            background-color: #0069d9;
+        }
+
+        /* CSS for Map Modal */
+        .map-modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); 
+            justify-content: center; align-items: center;
+        }
+        .map-modal-content {
+            background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888;
+            width: 60%; height: 60%; position: relative;
+        }
+        .map-close-btn {
+            color: #aaa; position: absolute; top: 5px; right: 15px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .map-close-btn:hover { color: black; }
+        #map { width: 100%; height: calc(100% - 30px); margin-top: 10px; }
+        #map-title { font-family: 'Junge', serif; font-size: 18px; }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="volunteerNameHeader">NAME OF VOLUNTEER</span>
+        </div>
+        <div class="title">MY ASSIGNED APPOINTMENTS</div>
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Appointment Name</th>
+                    <th>Date</th>
+                    <th>Time from</th>
+                    <th>Time to</th>
+                    <th>Client Name</th>
+                    <th>Client Contact</th>
+                    <th>Location</th>
+                    <th>Add to Calendar</th>
+                </tr>
+            </thead>
+            <tbody id="appointmentsTable"></tbody>
+        </table>
+    </div>
+
+    <div id="mapModal" class="map-modal">
+        <div class="map-modal-content">
+            <span class="map-close-btn" onclick="closeMap()">&times;</span>
+            <div id="map-title">User Location</div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        let map; // Define map variable
+
+        async function loadAppointments() {
+            const volunteerName = localStorage.getItem('volunteerName');
+            const volunteerToken = localStorage.getItem('volunteerToken');
+
+            if (volunteerName && volunteerToken) {
+                document.getElementById('volunteerNameHeader').textContent = volunteerName;
+            } else {
+                alert("Please log in to view appointments.");
+                window.location.href = 'vollogin.html';
+                return;
+            }
+
+            const tableBody = document.getElementById("appointmentsTable");
+            tableBody.innerHTML = ""; 
+
+            try {
+                const response = await fetch('/api/appointments/volunteer', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + volunteerToken
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch appointments');
+                
+                const appointments = await response.json(); 
+
+                if (appointments.length === 0) {
+                    // Updated colspan to 9
+                    tableBody.innerHTML = '<tr><td colspan="9">You have no assigned appointments.</td></tr>';
+                    return;
+                }
+
+                appointments.forEach((appointment, index) => {
+                    // --- 3. MODIFIED TABLE ROW ---
+                    const row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${appointment.purpose}</td>
+                        <td>${appointment.date}</td>
+                        <td>${appointment.timeFrom}</td>
+                        <td>${appointment.timeTo}</td>
+                        <td>${appointment.name}</td> 
+                        <td>${appointment.contact}</td>
+                        <td>
+                            <button class="map-btn" onclick="showLocation('${appointment.location}')">
+                                View Map
+                            </button>
+                        </td>
+                        <td>
+                            <button class="calendar-btn" onclick='addToCalendar(${JSON.stringify(appointment)})'>
+                                Add
+                            </button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Updated colspan to 9
+                tableBody.innerHTML = '<tr><td colspan="9">Could not load appointments.</td></tr>';
+            }
+        }
+        
+        window.onload = loadAppointments;
+
+        // --- Map Functions (Unchanged) ---
+        async function showLocation(locationString) {
+            const modal = document.getElementById('mapModal');
+            const mapTitle = document.getElementById('map-title');
+            modal.style.display = "flex"; 
+            mapTitle.textContent = `Loading location for: ${locationString}...`;
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationString)}&limit=1`);
+                if (!response.ok) throw new Error('Failed to geocode address');
+                const data = await response.json();
+                if (data.length === 0) {
+                    mapTitle.textContent = `Could not find location for: ${locationString}`;
+                    return;
+                }
+                const lat = data[0].lat;
+                const lon = data[0].lon;
+                mapTitle.textContent = `User Location: ${data[0].display_name}`;
+                if (map) { map.remove(); }
+                map = L.map('map').setView([lat, lon], 15); 
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                L.marker([lat, lon]).addTo(map).bindPopup(locationString).openPopup();
+                setTimeout(() => map.invalidateSize(), 100); // The map fix
+            } catch (error) {
+                console.error("Map Error:", error);
+                mapTitle.textContent = "Error loading map.";
+            }
+        }
+        function closeMap() {
+            document.getElementById('mapModal').style.display = "none";
+        }
+
+        // --- 4. NEW FUNCTIONS TO CREATE AND DOWNLOAD .ICS FILE ---
+
+        /**
+         * Parses DD/MM/YYYY date and h:mm AM/PM time into an ICS-formatted string
+         * e.g., "20251112T170000"
+         */
+        function parseDateTime(dateStr, timeStr) {
+            // 1. Parse Date (Handles DD/MM/YY and DD/MM/YYYY)
+            const [day, month, yearInput] = dateStr.split('/');
+            const year = yearInput.length === 4 ? yearInput : `20${yearInput}`;
+            
+            // 2. Parse Time (h:mm AM/PM)
+            let [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+
+            if (hours === '12') {
+                hours = '00'; // 12 AM is 00 hours
+            }
+            if (modifier && modifier.toUpperCase() === 'PM') { 
+                hours = parseInt(hours, 10) + 12; // Convert 4 PM to 16
+            }
+
+            hours = String(hours).padStart(2, '0');
+            
+            // 3. Format to YYYYMMDDTHHMMSS
+            return `${year}${month.padStart(2, '0')}${day.padStart(2, '0')}T${hours}${minutes}00`;
+        }
+
+        /**
+         * Generates and downloads an .ics file for the appointment
+         */
+        function addToCalendar(appointment) {
+            const title = `EverCare: ${appointment.purpose} w/ ${appointment.name}`;
+            const location = appointment.location;
+            const description = `Appointment with client ${appointment.name}. Contact: ${appointment.contact}`;
+            
+            const tzid = "Asia/Kolkata"; 
+            const dtstart = parseDateTime(appointment.date, appointment.timeFrom);
+            const dtend = parseDateTime(appointment.date, appointment.timeTo);
+
+            const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//EverCare//NONSGML v1.0//EN
+BEGIN:VTIMEZONE
+TZID:${tzid}
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:+0530
+TZOFFSETTO:+0530
+TZNAME:IST
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:${'evercare-' + Math.random().toString(36).substr(2, 9)}
+DTSTAMP:${new Date().toISOString().replace(/[-:.]/g, '')}Z
+DTSTART;TZID=${tzid}:${dtstart}
+DTEND;TZID=${tzid}:${dtend}
+SUMMARY:${title}
+LOCATION:${location}
+DESCRIPTION:${description}
+END:VEVENT
+END:VCALENDAR
+            `.trim().replace(/\n/g, '\r\n'); 
+
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${appointment.purpose}_appointment.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    </script>
+</body>
+</html>
